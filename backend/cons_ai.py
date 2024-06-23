@@ -1,16 +1,28 @@
-import os
+import imp
 from openai import OpenAI
+from dotenv import load_dotenv
+import os
 
-client = OpenAI(
-    api_key="ここに作成したキーを入力する",
-)
+# .envファイルを現在のディレクトリからロード
+load_dotenv()
 
-chat_completion = client.chat.completions.create(
-    messages=[
-        {
-            "role": "user",
-            "content": "こんにちは",
-        }
-    ],
-    model="gpt-3.5-turbo",
-)
+# OpenAI APIキーを設定
+client = OpenAI()
+
+def make_message(option1, option2):
+    
+    completion = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content":"条件をもとに遅刻の理由ををランダムで一つ考え、それだけを出力します。"},
+            {"role": "user", "content": f"条件：私は、{option1}で、{option2}分ほど遅刻をしてしまいそう。"}
+        ]
+    )
+
+    message = completion.choices[0].message.content
+    return message
+
+    
+
+if __name__ == "__main__":
+    make_message()
